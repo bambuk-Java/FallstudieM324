@@ -7,11 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04 # Feste Version für Stabilität
-
+  install:
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -25,11 +24,44 @@ jobs:
           npm install
           echo "✅ Dependencies installiert."
 
+      # Abhängigkeiten zwischenspeichern für folgende Jobs
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+  lint:
+    runs-on: ubuntu-22.04
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore cached dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
       - name: Run Linting
         run: |
           echo "🔍 Starte Linting..."
           npm run lint
           echo "✅ Linting abgeschlossen."
+
+  test:
+    runs-on: ubuntu-22.04
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore cached dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
 
       - name: Run Jest Tests
         run: |
@@ -37,8 +69,25 @@ jobs:
           npm run test
           echo "✅ Tests abgeschlossen."
 
+  build:
+    runs-on: ubuntu-22.04
+    needs: [lint, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore cached dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
       - name: Build Next.js application
         run: |
           echo "🏗️ Starte Next.js Build..."
           npm run build
           echo "✅ Build erfolgreich abgeschlossen."
+  
+  deploy:
+    runs-on: ubuntu-22.04
+    echo: "🚀  Deployment Successful"
