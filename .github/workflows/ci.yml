@@ -6,10 +6,39 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs: 
+jobs:
   build:
-    runs-on: ubuntu-22.04 # wir wissen was wir machen, darum nicht latest! Wir wissen doch nicht was wir machen sollte 22.04 sein!
+    runs-on: ubuntu-22.04 # Feste Version für Stabilität
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          echo "📦 Installiere Dependencies..."
+          npm install
+          echo "✅ Dependencies installiert."
+
+      - name: Run Linting
+        run: |
+          echo "🔍 Starte Linting..."
+          npm run lint
+          echo "✅ Linting abgeschlossen."
+
+      - name: Run Jest Tests
+        run: |
+          echo "🧪 Starte Jest Tests..."
+          npm run test
+          echo "✅ Tests abgeschlossen."
+
+      - name: Build Next.js application
+        run: |
+          echo "🏗️ Starte Next.js Build..."
+          npm run build
+          echo "✅ Build erfolgreich abgeschlossen."
