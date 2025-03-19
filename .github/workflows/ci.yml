@@ -1,8 +1,14 @@
 name: CI
 
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs: 
   build:
-    runs-on: ubuntu-22.4 # wir wissen was wir machen, darum nicht latest!
+    runs-on: ubuntu-22.04 # wir wissen was wir machen, darum nicht latest! Wir wissen doch nicht was wir machen sollte 22.04 sein!
 
     steps:
       - name: Checkout
