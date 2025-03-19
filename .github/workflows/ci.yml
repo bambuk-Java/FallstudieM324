@@ -87,7 +87,10 @@ jobs:
           echo "🏗️ Starte Next.js Build..."
           npm run build
           echo "✅ Build erfolgreich abgeschlossen."
-  
   deploy:
-    runs-on: ubuntu-22.04
-    echo: "🚀  Deployment Successful"
+  runs-on: ubuntu-22.04
+  needs: build
+  steps:
+    - name: Deployment simulieren
+      run: |
+        echo "🚀 Deployment Successful"
